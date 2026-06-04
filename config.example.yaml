@@ -1,0 +1,222 @@
+# Configuration Template
+# Copy this file to config.yaml and fill in your API keys
+
+# ============================================
+# Global Settings
+# ============================================
+global:
+  log_level: INFO  # DEBUG, INFO, WARNING, ERROR
+  session_expiry_minutes: 30
+  max_sessions_per_hour: 100
+  trace_log_file: logs/trace.jsonl
+  trace_log_retention_days: 7
+
+# ============================================
+# Environment Selection
+# ============================================
+active_environment: chatgpt  # Options: chatgpt, claude, local, telegram, slack, copilot
+
+# ============================================
+# ChatGPT Configuration
+# ============================================
+chatgpt:
+  enabled: true
+  api_key: "${OPENAI_API_KEY}"  # Set via environment variable
+  model: "gpt-4-turbo-preview"  # or gpt-3.5-turbo for cost savings
+  max_input_tokens: 8000
+  max_output_tokens: 4000
+  temperature: 0.7
+  top_p: 0.9
+  timeout_seconds: 60
+  rate_limit_rpm: 3500
+  retry_max_attempts: 3
+  retry_backoff_factor: 2
+
+# ============================================
+# Claude Configuration
+# ============================================
+claude:
+  enabled: false
+  api_key: "${ANTHROPIC_API_KEY}"  # Set via environment variable
+  model: "claude-3-opus-20240229"
+  max_input_tokens: 200000
+  max_output_tokens: 4000
+  temperature: 0.7
+  timeout_seconds: 120
+  rate_limit_rpm: 1000
+  retry_max_attempts: 3
+
+# ============================================
+# Local Ollama Configuration
+# ============================================
+local:
+  enabled: false
+  base_url: "http://localhost:11434"
+  model: "llama2"  # or llama2-13b, mistral, neural-chat, etc.
+  max_input_tokens: 4096
+  max_output_tokens: 2048
+  temperature: 0.7
+  timeout_seconds: 180  # Slower for local models
+  pull_model_if_missing: true
+
+# ============================================
+# Telegram Bot Configuration
+# ============================================
+telegram:
+  enabled: false
+  bot_token: "${TELEGRAM_BOT_TOKEN}"  # 123456:ABC-DEF1234ghIkl-zyx57W2v1u123ew11
+  webhook_url: "https://your-domain.com/webhook"  # For webhook mode
+  polling_mode: true  # true for polling, false for webhook
+  polling_timeout_seconds: 30
+  max_message_length: 4096  # Telegram limit
+
+# ============================================
+# Slack App Configuration
+# ============================================
+slack:
+  enabled: false
+  bot_token: "${SLACK_BOT_TOKEN}"  # xoxb-your-token
+  signing_secret: "${SLACK_SIGNING_SECRET}"  # For request verification
+  app_id: "${SLACK_APP_ID}"
+  webhook_url: "https://your-domain.com/slack/events"
+
+# ============================================
+# GitHub Copilot Configuration
+# ============================================
+copilot:
+  enabled: false
+  github_token: "${GITHUB_TOKEN}"  # Personal access token
+  api_version: "2023-11"
+  timeout_seconds: 60
+
+# ============================================
+# GitHub Integration (Public Repos)
+# ============================================
+github:
+  enabled: true
+  api_base_url: "https://api.github.com"
+  read_timeout_seconds: 10
+  max_readme_chars: 500
+  max_tree_items: 50
+
+# ============================================
+# Business Logic & Protection
+# ============================================
+business:
+  # Code extraction protection
+  max_code_block_lines: 10
+  tech_question_limit: 3  # Force redirect after N technical questions
+  
+  # Lead tracking
+  track_code_requests: true
+  track_bypass_attempts: true
+  
+  # Company redirect
+  company_contact_email: "contact@example.com"
+  company_contact_phone: "+1-234-567-8900"
+  company_booking_url: "https://cal.example.com"
+  
+  # Response templates
+  code_rejection_template: "I don't generate full code. Our team can implement this. Contact us for a quote."
+  architecture_rejection_template: "Complete architecture is part of our paid service. Let's discuss your needs."
+
+# ============================================
+# Session Management
+# ============================================
+session:
+  storage_type: "memory"  # Options: memory, redis
+  redis_url: "redis://localhost:6379/0"  # Only if storage_type is redis
+  session_cleanup_interval_seconds: 60
+  max_session_memory_mb: 512
+
+# ============================================
+# Monitoring & Observability
+# ============================================
+monitoring:
+  enabled: true
+  prometheus_enabled: false
+  prometheus_port: 8000
+  sentry_enabled: false
+  sentry_dsn: ""  # Your Sentry DSN if enabled
+  analytics_enabled: true
+  analytics_endpoint: "https://analytics.example.com"
+
+# ============================================
+# Development & Testing
+# ============================================
+development:
+  debug_mode: false
+  mock_llm_responses: false  # Use cached responses for testing
+  simulate_delays: false
+  log_all_requests: false
+  persist_sessions_to_disk: false  # For debugging
+
+# ============================================
+# Performance Tuning
+# ============================================
+performance:
+  enable_caching: true
+  cache_ttl_seconds: 300
+  max_concurrent_requests: 10
+  request_queue_size: 100
+  enable_async_processing: true
+
+# ============================================
+# Security
+# ============================================
+security:
+  # API key management
+  rotate_keys_every_days: 90
+  
+  # CORS (if running as API)
+  cors_allowed_origins:
+    - "http://localhost:3000"
+    - "https://your-domain.com"
+  
+  # Rate limiting
+  rate_limit_by_ip: true
+  rate_limit_requests_per_minute: 60
+  rate_limit_burst: 10
+  
+  # Data sanitization
+  sanitize_logs: true
+  mask_api_keys_in_logs: true
+  mask_personal_data: true
+
+# ============================================
+# Integrations
+# ============================================
+integrations:
+  # Optional: Slack notifications for errors
+  slack_error_webhook: ""
+  
+  # Optional: Email notifications
+  smtp_enabled: false
+  smtp_host: "smtp.gmail.com"
+  smtp_port: 587
+  smtp_user: "${SMTP_USER}"
+  smtp_password: "${SMTP_PASSWORD}"
+  smtp_from_email: "noreply@example.com"
+  
+  # Optional: Analytics tracking
+  mixpanel_token: ""
+  amplitude_key: ""
+
+# ============================================
+# Feature Flags
+# ============================================
+features:
+  enable_clarify_project: true
+  enable_analyze_requirements: true
+  enable_suggest_roadmap: true
+  enable_identify_risks: true
+  enable_generate_artifacts: true
+  enable_prepare_meeting: true
+  enable_evaluate_idea: true
+  enable_consult_on_process: true
+  enable_github_integration: true
+  
+  # Experimental
+  enable_research_layer: false
+  enable_custom_prompts: false
+  enable_multi_language: false
